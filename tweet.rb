@@ -22,8 +22,8 @@ File.open("kj114514150525.csv") do |f|
     while node.next do
       type = node.feature.match(/(.+?),/)[1]
       #puts type
-      if (type == "名詞")
-      #if !(type == ("助詞"||"助動詞"||"フィラー")) && node.surface.length > 1
+      #if (type == "名詞")
+      if !(type == ("助詞"||"助動詞"||"フィラー")) && node.surface.length > 1
         words << node.surface
       end
       node = node.next

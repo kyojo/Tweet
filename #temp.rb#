@@ -1,0 +1,3 @@
+s = "adadadada"adadada"
+p s
+p s.delete"\""

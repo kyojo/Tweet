@@ -1,0 +1,9 @@
+File.open("kj114514150525.csv") do |f|
+  while str = f.gets do
+    str.force_encoding("UTF-8")
+    str = str.scrub('?')
+    id = str.split(",")
+    puts id[0]
+    #puts id[27]
+  end
+end

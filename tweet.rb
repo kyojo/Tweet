@@ -4,7 +4,7 @@ DIC = {
   jumandic: '/usr/local/Cellar/mecab/0.996/lib/mecab/dic/jumandic',
   unidic: '/usr/local/Cellar/mecab/0.996/lib/mecab/dic/unidic',
 }
-me = MeCab::Tagger.new("-d #{DIC[:unidic]}")
+me = MeCab::Tagger.new
 words = []
 
 File.open("kj114514150525.csv") do |f|
@@ -20,11 +20,10 @@ File.open("kj114514150525.csv") do |f|
     node = me.parseToNode(id[1])
     node = node.next
     while node.next do
-      type = node.feature.match(/(.+?),/)[1]
-      #puts type
-      #if (type == "名詞")
-      if !(type == ("助詞"||"助動詞"||"フィラー")) && node.surface.length > 1
-        words << node.surface
+      feat = node.feature.split(",")
+      #if (feat[0] == "名詞")
+      if !(feat[0] == ("助詞"||"助動詞"||"フィラー")) && feat[6].length > 1
+        words << feat[6]
       end
       node = node.next
     end

@@ -1,9 +1,25 @@
 require 'MeCab'
+require 'rubygems'
+require 'classifier'
+require 'stemmer'
+
+=begin
 DIC = {
   ipadic: '/usr/local/Cellar/mecab/0.996/lib/mecab/dic/ipadic',
   jumandic: '/usr/local/Cellar/mecab/0.996/lib/mecab/dic/jumandic',
   unidic: '/usr/local/Cellar/mecab/0.996/lib/mecab/dic/unidic',
 }
+=end
+
+begin
+  op = nil
+  File.open("bayes_data", "r") do |f|
+    op = Marshal.load(f)
+  end
+rescue
+  op = Classifier::Bayes.new("0","1")
+end
+
 me = MeCab::Tagger.new
 words = []
 
@@ -29,6 +45,16 @@ File.open("kj114514150525.csv") do |f|
     end
   end
 end
+
+#traing
+train = words.join(" ")
+op.train("0", train)
+p op
+
+File.open("bayes_data", "wb") do |f|
+  Marshal.dump(op, f)
+end
+
 
 count = {}
 for wd in words do

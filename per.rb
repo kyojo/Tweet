@@ -27,6 +27,6 @@ CSV.foreach("revised_data.csv") do |id|
   end
 
   File.open("per.csv", "a") do |f|
-    f.puts("#{id[0]},#{op},#{ex},#{op},#{ag},#{co}")
+    f.puts("#{id[0]},#{op},#{co},#{ex},#{ag},#{ne}")
   end
 end

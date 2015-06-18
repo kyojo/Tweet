@@ -1,4 +1,3 @@
-Dir::glob("/Users/kei/tweet/sampling/**/*.csv.gz").each do |f|
-  result = system("gzip -d #{f}")
-  puts result
+Dir::glob("/Users/kei/tweet/sampling/**/*.csv").each do |f|
+  puts f
 end

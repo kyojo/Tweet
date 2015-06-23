@@ -5,11 +5,11 @@ require 'classifier'
 require 'stemmer'
 
 me = MeCab::Tagger.new
-op = Classifier::Bayes.new("0","1")
-co = Classifier::Bayes.new("0","1")
-ex = Classifier::Bayes.new("0","1")
-ag = Classifier::Bayes.new("0","1")
-ne = Classifier::Bayes.new("0","1")
+pa = Array.new(5)
+#0:op 1:co 2:ex 3:ag 4:ne
+for n in 0..4
+  pa[n] = Classifier::Bayes.new("0","1")
+end
 
 Dir::glob("/Users/kei/tweet/sampling/**/*.csv").each do |f|
   pass = f.split("/")
@@ -46,30 +46,12 @@ Dir::glob("/Users/kei/tweet/sampling/**/*.csv").each do |f|
   train = words.join(" ")
   CSV.foreach("per.csv") do |per|
     if id == per[0].to_i
-      if(per[1].to_i < 30)
-        op.train("0", train)
-      else
-        op.train("1", train)
-      end
-      if(per[2].to_i < 30)
-        co.train("0", train)
-      else
-        co.train("1", train)
-      end
-      if(per[3].to_i < 30)
-        ex.train("0", train)
-      else
-        ex.train("1", train)
-      end
-      if(per[4].to_i < 30)
-        ag.train("0", train)
-      else
-        ag.train("1", train)
-      end
-      if(per[5].to_i < 30)
-        ne.train("0", train)
-      else
-        ne.train("1", train)
+      for n in 0..4
+        if(per[n+1].to_i < 30)
+          pa[n].train("0", train)
+        else
+          pa[n].train("1", train)
+        end
       end
       break
     end
@@ -77,24 +59,9 @@ Dir::glob("/Users/kei/tweet/sampling/**/*.csv").each do |f|
 end
 
 #bayes save
-p op
-p co
-p ex
-p ag
-p ne
+for n in 0..4
+  File.open("bayes_#{n}2", "wb") do |f|
+    Marshal.dump(pa[n], f)
+  end
+end
 
-File.open("bayes_op2", "wb") do |f|
-  Marshal.dump(op, f)
-end
-File.open("bayes_co2", "wb") do |f|
-  Marshal.dump(co, f)
-end
-File.open("bayes_ex2", "wb") do |f|
-  Marshal.dump(ex, f)
-end
-File.open("bayes_ag2", "wb") do |f|
-  Marshal.dump(ag, f)
-end
-File.open("bayes_ne2", "wb") do |f|
-  Marshal.dump(ne, f)
-end

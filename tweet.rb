@@ -46,16 +46,6 @@ File.open("kj114514150525.csv") do |f|
   end
 end
 
-#traing
-train = words.join(" ")
-op.train("0", train)
-p op
-
-File.open("bayes_data", "wb") do |f|
-  Marshal.dump(op, f)
-end
-
-
 count = {}
 for wd in words do
   if count.include?(wd)

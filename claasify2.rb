@@ -4,6 +4,7 @@ require 'rubygems'
 require 'classifier'
 require 'stemmer'
 
+ave = [28, 25, 23, 27, 27]
 pa = Array.new(5)
 
 begin
@@ -63,9 +64,9 @@ Dir::glob("/Users/kei/tweet/sampling/**/*.csv").each do |f|
   CSV.foreach("per.csv") do |per|
     if id == per[0].to_i
       for n in 0..4
-        if(per[n+1].to_i < 30 && re[n] == 0)
+        if(per[n+1].to_i <= ave[n] && re[n] == 0)
           tr[n] += 1
-        elsif(per[n+1].to_i >= 30 && re[n] == 1)
+        elsif(per[n+1].to_i > ave[n] && re[n] == 1)
           tr[n] += 1
         else
           fa[n] += 1

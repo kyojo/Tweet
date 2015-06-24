@@ -5,6 +5,7 @@ require 'classifier'
 require 'stemmer'
 
 me = MeCab::Tagger.new
+ave = [28, 25, 23, 27, 27]
 pa = Array.new(5)
 #0:op 1:co 2:ex 3:ag 4:ne
 for n in 0..4
@@ -47,7 +48,7 @@ Dir::glob("/Users/kei/tweet/sampling/**/*.csv").each do |f|
   CSV.foreach("per.csv") do |per|
     if id == per[0].to_i
       for n in 0..4
-        if(per[n+1].to_i < 30)
+        if(per[n+1].to_i <= ave[n])
           pa[n].train("0", train)
         else
           pa[n].train("1", train)

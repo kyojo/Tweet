@@ -15,7 +15,7 @@ end
 Dir::glob("/Users/kei/tweet/sampling/**/*.csv").each do |f|
   pass = f.split("/")
   id = pass[5].to_i
-  if id < 6300000 || id == 0
+  if id > 6300000
     next
   end
   words = []
@@ -35,7 +35,7 @@ Dir::glob("/Users/kei/tweet/sampling/**/*.csv").each do |f|
       node = node.next
       while node.next do
         feat = node.feature.split(",")
-        if !(feat[0] == ("名詞"||"動詞"||"連体詞"))
+        if !(feat[0] == ("名詞"||"動詞"))
           words << feat[6]
         end
         node = node.next

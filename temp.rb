@@ -1,3 +1,3 @@
-s = "adadadadaadadada"
-p s
-puts s
+include Math
+
+puts log(2.8)

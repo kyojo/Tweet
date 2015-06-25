@@ -30,7 +30,7 @@ pr = Array.new(5, 0)
 Dir::glob("/Users/kei/tweet/sampling/**/*.csv").each do |f|
   pass = f.split("/")
   id = pass[5].to_i
-  if id > 6300000
+  if id < 6300000
     next
   end
   words = []
@@ -49,7 +49,7 @@ Dir::glob("/Users/kei/tweet/sampling/**/*.csv").each do |f|
       node = node.next
       while node.next do
         feat = node.feature.split(",")
-        if !(feat[0] == ("名詞"||"動詞"||"連体詞"))
+        if !(feat[0] == ("名詞"||"動詞"))
           words << feat[6]
         end
         node = node.next
@@ -81,4 +81,4 @@ for n in 0..4
   pr[n] = (tr[n] / (tr[n] + fa[n])) * 100.to_f
 end
 
-puts "Openness:#{pr[0]}%, Conscientiousness:#{pr[1]}%, Extraversion:#{pr[2]}%, Agreeableness:#{pr[3]}%, Neuroticism:#{pr[4]}%"
+puts "Openness:#{pr[0]}%\nConscientiousness:#{pr[1]}%\nExtraversion:#{pr[2]}%\nAgreeableness:#{pr[3]}%\nNeuroticism:#{pr[4]}%"

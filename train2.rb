@@ -15,7 +15,7 @@ end
 Dir::glob("/Users/kei/tweet/sampling/**/*.csv").each do |f|
   pass = f.split("/")
   id = pass[5].to_i
-  if id > 5000000 || id == 0
+  if id < 6300000 || id == 0
     next
   end
   words = []

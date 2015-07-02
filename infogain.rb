@@ -43,9 +43,23 @@ Dir::glob("/Users/kei/tweet/sampling/**/*.csv").each do |f|
       node = node.next
       while node.next do
         feat = node.feature.split(",")
-        words << feat[6]
-        allwd << feat[6]
+        if !(feat[0] == ("名詞"))
+          words << feat[6]
+          allwd << feat[6]
+        end
         node = node.next
+      end
+    end
+  end
+
+  #Initialization
+  for n in 0..4
+    for wd in words
+      if !npw[n].key?(wd)
+        npw[n][wd] = 0
+      end
+      if !nnw[n].key?(wd)
+        nnw[n][wd] = 0
       end
     end
   end
@@ -57,18 +71,10 @@ Dir::glob("/Users/kei/tweet/sampling/**/*.csv").each do |f|
         for n in 0..4
           if(per[n+1].to_i <= ave[n])
             np[n] += 1
-            if npw[n].key?(wd)
-              npw[n][wd] += 1
-            else
-              npw[n][wd] = 1
-            end
+            npw[n][wd] += 1
           else
             nn[n] += 1
-            if nnw[n].key?(wd)
-              nnw[n][wd] += 1
-            else
-              nnw[n][wd] = 1
-            end
+            nnw[n][wd] += 1
           end
         end
       end
@@ -77,46 +83,18 @@ Dir::glob("/Users/kei/tweet/sampling/**/*.csv").each do |f|
   end
 end
 
-puts np[0]
-puts nn[0]
-
 infogain = Array.new(5){{}}
 allwd.uniq!
+allwd.delete("*")
 for wd in allwd
   for n in 0..4
     p_p = np[n] / (np[n] + nn[n]).to_f
     p_n = 1.0 - p_p
-    if npw[n].key?(wd) && nnw[n].key?(wd)
-      p1 = (npw[n][wd] + nnw[n][wd]) / (np[n] + nn[n]).to_f
-    elsif npw[n].key?(wd)
-      p1 = npw[n][wd] / (np[n] + nn[n]).to_f
-    elsif nnw[n].key?(wd)
-      p1 = nnw[n][wd] / (np[n] + nn[n]).to_f
-    end
+    p1 = (npw[n][wd] + nnw[n][wd]) / (np[n] + nn[n]).to_f
     p0 = 1.0 - p1
-    if npw[n].key?(wd) && nnw[n].key?(wd)
-      p_p1 = npw[n][wd] / (npw[n][wd] + nnw[n][wd]).to_f
-    elsif npw[n].key?(wd)
-      p_p1 = 1.0
-    elsif nnw[n].key?(wd)
-      p_p1 = 0.0
-    end
+    p_p1 = npw[n][wd] / (npw[n][wd] + nnw[n][wd]).to_f
     p_n1 = 1.0 - p_p1
-    if npw[n].key?(wd) && nnw[n].key?(wd)
-      if (np[n] - npw[n][wd]) == 0
-        p_p0 = 0
-      else
-        p_p0 = (np[n] - npw[n][wd]) / (np[n] - npw[n][wd] + nn[n] - nnw[n][wd]).to_f
-      end
-    elsif npw[n].key?(wd)
-      if (np[n] - npw[n][wd]) == 0
-        p_p0 = 0
-      else
-        p_p0 = (np[n] - npw[n][wd]) / (np[n] - npw[n][wd] + nn[n]).to_f
-      end
-    elsif nnw[n].key?(wd)
-      p_p0 = np[n] / (np[n] + nn[n] - nnw[n][wd]).to_f
-    end
+    p_p0 = (np[n] - npw[n][wd]) / (np[n] - npw[n][wd] + nn[n] - nnw[n][wd]).to_f
     p_n0 = 1.0 - p_p0
     h_c = -1.0 * p_p * log(p_p) - p_n * log(p_n)
     if p_n1.to_i == 0
@@ -133,30 +111,21 @@ for wd in allwd
     else
       h_c0 = -1.0 * p_p0 * log(p_p0) - p_n0 * log(p_n0)
     end
-    #puts "#{h_c}, #{h_c1}, #{h_c0}"
     gain = h_c - (p1 * h_c1 + p0 * h_c0)
+    #puts "#{wd},#{n} : #{h_c}, #{h_c1}, #{h_c0}, #{gain}"
     infogain[n][wd] = gain
   end
 end
 
-result = Array(10)
-for n in 0..4
-  puts ("-----------------------------------")
-  case n
-  when 0
-    puts("Openness")
-  when 1
-    puts("Conscientiousness")
-  when 2
-    puts("Extraversion")
-  when 3
-    puts("Agreeableness")
-  when 4
-    puts("Neuroticism")
+result = Array(2)
+print "Openness,infogain,Conscientiousness,infogain,Extraversion,infogain,Agreeableness,infogain,Neuroticism,infogain\n"
+for i in 0..50
+  for n in 0..4
+    result = infogain[n].sort{|(k1, v1), (k2, v2)| (v2*100000).to_i <=> (v1*100000).to_i}[i]
+    print "#{result[0]},#{result[1]}"
+    if n != 4
+      print ","
+    end
   end
-  result = infogain[n].sort{|(k1, v1), (k2, v2)| (v2*100000).to_i <=> (v1*100000).to_i}[0..9]
-  for res in result
-    puts res
-  end
+  print "\n"
 end
-

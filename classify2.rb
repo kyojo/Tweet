@@ -6,6 +6,19 @@ require 'stemmer'
 
 ave = [28, 25, 23, 27, 27]
 pa = Array.new(5)
+fw = Array.new(5){Array.new()}
+i = 0
+CSV.foreach("gain.csv") do |gw|
+  j = 0
+  for wd in gw
+    fw[i] << wd
+    j += 1
+    if j == 5000
+      break
+    end
+  end
+  i += 1
+end
 
 begin
   for n in 0..4
@@ -30,7 +43,7 @@ pr = Array.new(5, 0)
 Dir::glob("/Users/kei/tweet/sampling/**/*.csv").each do |f|
   pass = f.split("/")
   id = pass[5].to_i
-  if id < 6300000
+  if id > 6300000
     next
   end
   words = []
@@ -57,10 +70,21 @@ Dir::glob("/Users/kei/tweet/sampling/**/*.csv").each do |f|
     end
   end
 
-  doc = words.join(" ")
+  docu = Array.new(5){Array.new()}
+  doc = Array.new(5)
   for n in 0..4
-    re[n] = pa[n].classify(doc).to_i
+    for wd in words
+      if fw[n].include?(wd)
+        docu[n] << wd
+      end
+    end
+    doc[n] = docu[n].join(" ")
   end
+
+  for n in 0..4
+    re[n] = pa[n].classify(doc[n]).to_i
+  end
+
   CSV.foreach("per.csv") do |per|
     if id == per[0].to_i
       for n in 0..4

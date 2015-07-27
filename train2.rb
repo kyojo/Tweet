@@ -7,22 +7,40 @@ require 'stemmer'
 me = MeCab::Tagger.new
 ave = [28, 25, 23, 27, 27]
 pa = Array.new(5)
+fw = Array.new(5){Array.new()}
 #0:op 1:co 2:ex 3:ag 4:ne
 for n in 0..4
   pa[n] = Classifier::Bayes.new("0","1")
 end
 
+i = 0
+CSV.foreach("gain.csv") do |gw|
+  j = 0
+  for wd in gw
+    fw[i] << wd
+    j += 1
+    if j == 5000
+      break
+    end
+  end
+  i += 1
+end
+
 Dir::glob("/Users/kei/tweet/sampling/**/*.csv").each do |f|
   pass = f.split("/")
   id = pass[5].to_i
-  if id > 6300000
+  if id < 6300000
     next
   end
   words = []
+  count = 0
 
   #words collect
   File.open(f) do |file|
     while str = file.gets do
+      if count > 40000
+        break
+      end
       str.force_encoding("UTF-8")
       str = str.scrub('?')
       twe = str.split(",")
@@ -37,21 +55,32 @@ Dir::glob("/Users/kei/tweet/sampling/**/*.csv").each do |f|
         feat = node.feature.split(",")
         if !(feat[0] == ("名詞"||"動詞"))
           words << feat[6]
+          count += 1
         end
         node = node.next
       end
     end
   end
 
+  tra = Array.new(5){Array.new()}
+  train = Array.new(5)
+  for n in 0..4
+    for wd in words
+      if fw[n].include?(wd)
+        tra[n] << wd
+      end
+    end
+    train[n] = tra[n].join(" ")
+  end
+
   #training
-  train = words.join(" ")
   CSV.foreach("per.csv") do |per|
     if id == per[0].to_i
       for n in 0..4
         if(per[n+1].to_i <= ave[n])
-          pa[n].train("0", train)
+          pa[n].train("0", train[n])
         else
-          pa[n].train("1", train)
+          pa[n].train("1", train[n])
         end
       end
       break

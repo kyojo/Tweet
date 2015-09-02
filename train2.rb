@@ -4,8 +4,11 @@ require 'rubygems'
 require 'classifier'
 require 'stemmer'
 
+idstart = ARGV[0].to_i
+idend = ARGV[1].to_i
+
 me = MeCab::Tagger.new
-ave = [28, 25, 23, 27, 27]
+ave = [28, 26, 23, 27, 28]
 pa = Array.new(5)
 fw = Array.new(5){Array.new()}
 #0:op 1:co 2:ex 3:ag 4:ne
@@ -19,7 +22,7 @@ CSV.foreach("gain.csv") do |gw|
   for wd in gw
     fw[i] << wd
     j += 1
-    if j == 5000
+    if j == 1000
       break
     end
   end
@@ -29,7 +32,7 @@ end
 Dir::glob("/Users/kei/tweet/sampling/**/*.csv").each do |f|
   pass = f.split("/")
   id = pass[5].to_i
-  if id < 6300000
+  if id > idstart && id < idend
     next
   end
   words = []

@@ -10,7 +10,7 @@ CSV.foreach("per.csv") do |id|
 end
 
 for elm in ave
-  elm /= sample
+  elm /= sample.to_f
   puts elm
 end
 ave.map!{|item| item / sample}

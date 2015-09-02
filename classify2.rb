@@ -4,7 +4,10 @@ require 'rubygems'
 require 'classifier'
 require 'stemmer'
 
-ave = [28, 25, 23, 27, 27]
+idstart = ARGV[0].to_i
+idend = ARGV[1].to_i
+
+ave = [28, 26, 23, 27, 28]
 pa = Array.new(5)
 fw = Array.new(5){Array.new()}
 i = 0
@@ -13,7 +16,7 @@ CSV.foreach("gain.csv") do |gw|
   for wd in gw
     fw[i] << wd
     j += 1
-    if j == 5000
+    if j == 1000
       break
     end
   end
@@ -43,7 +46,7 @@ pr = Array.new(5, 0)
 Dir::glob("/Users/kei/tweet/sampling/**/*.csv").each do |f|
   pass = f.split("/")
   id = pass[5].to_i
-  if id > 6300000
+  if id < idstart || id > idend
     next
   end
   words = []
@@ -105,4 +108,4 @@ for n in 0..4
   pr[n] = (tr[n] / (tr[n] + fa[n])) * 100.to_f
 end
 
-puts "Openness:#{pr[0]}%\nConscientiousness:#{pr[1]}%\nExtraversion:#{pr[2]}%\nAgreeableness:#{pr[3]}%\nNeuroticism:#{pr[4]}%"
+print "#{pr[0]},#{pr[1]},#{pr[2]},#{pr[3]},#{pr[4]}"
